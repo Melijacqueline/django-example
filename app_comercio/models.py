@@ -6,6 +6,7 @@ class Producto(models.Model):
     marca = models.CharField(max_length=120)
     precioUnitario = models.IntegerField()
     imagen_producto = models.ImageField(null=True, blank=True, upload_to="images/")
+    objects = models.Manager()
 
     def image_url(self):
         if self.imagen_producto and self.imagen_producto.name:

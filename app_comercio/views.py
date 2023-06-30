@@ -6,21 +6,48 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, CreateView
 
 from .forms import ClienteForm, MonitorForm, ComputadorForm, MouseForm
-from .models import Cliente, Monitor, Mouse, Computador
+from .models import Cliente, Monitor, Mouse, Computador, Producto
+from django.http import JsonResponse
+from django.apps import apps
 
 
 class HomePageView(TemplateView):
-
     template_name = "home.html"
 
 
-class AboutPageView(TemplateView):
+class CompraPageView(TemplateView):
+    template_name = "Compra.html"
 
+    def post(self, request):
+        product_id = request.POST.get('product')
+        client_id = request.POST.get('client')
+        selected_product = request.POST.get('selected_product')
+        if selected_product == 'monitor':
+            monitor = Monitor.objects.get(pk=product_id)
+            cliente = Cliente.objects.get(pk=client_id)
+            cliente.compraMonitor.add(monitor)
+            cliente.save()
+        elif selected_product == 'mouse':
+            mouse = Mouse.objects.get(pk=product_id)
+            cliente = Cliente.objects.get(pk=client_id)
+            cliente.compraMouse.add(mouse)
+            cliente.save()
+        elif selected_product == 'computer':
+            computer = Computador.objects.get(pk=product_id)
+            cliente = Cliente.objects.get(pk=client_id)
+            cliente.compraComputador.add(computer)
+            cliente.save()
+        else:
+            return JsonResponse({'error': 'Producto seleccionado invalido.'}, status=400)
+
+        return JsonResponse({'message': 'Compra existosa.'})
+
+
+class AboutPageView(TemplateView):
     template_name = "about.html"
 
 
 class ClientePageView(ListView):
-
     model = Cliente
     template_name = "cliente.html"
     context_object_name = 'data'
@@ -28,28 +55,24 @@ class ClientePageView(ListView):
 
 
 class MonitorPageView(ListView):
-
     model = Monitor
     template_name = "monitor.html"
     context_object_name = 'data'
 
 
 class MousePageView(ListView):
-
     model = Mouse
     template_name = "mouse.html"
     context_object_name = 'data'
 
 
 class ComputadorPageView(ListView):
-
     model = Computador
     template_name = "computador.html"
     context_object_name = 'data'
 
 
 class AddClientePageView(SuccessMessageMixin, CreateView):
-
     form_class = ClienteForm
     template_name = 'IngresarCliente.html'
     success_message = 'Cliente Ingresado'
@@ -68,7 +91,6 @@ class AddClientePageView(SuccessMessageMixin, CreateView):
 
 
 class AddMonitorPageView(SuccessMessageMixin, CreateView):
-
     form_class = MonitorForm
     template_name = 'IngresarMonitor.html'
     success_message = 'Monitor Ingresado'
@@ -87,7 +109,6 @@ class AddMonitorPageView(SuccessMessageMixin, CreateView):
 
 
 class AddComputadorPageView(SuccessMessageMixin, CreateView):
-
     form_class = ComputadorForm
     template_name = 'IngresarComputador.html'
     success_message = 'Computador Ingresado'
@@ -106,7 +127,6 @@ class AddComputadorPageView(SuccessMessageMixin, CreateView):
 
 
 class AddMousePageView(SuccessMessageMixin, CreateView):
-
     form_class = MouseForm
     template_name = 'IngresarMouse.html'
     success_message = 'Mouse Ingresado'
@@ -125,7 +145,6 @@ class AddMousePageView(SuccessMessageMixin, CreateView):
 
 
 class DeleteClientView(View):
-
     template_name = 'cliente.html'
     success_url = 'cliente'
 
@@ -145,3 +164,27 @@ class DeleteClientView(View):
 
     def get(self, request):
         return render(request, self.template_name)
+
+
+class ProductOptionsView(View):
+    def get(self, request):
+        selected_product = request.GET.get('selected_product')
+
+        product_model = apps.get_model('app_comercio', selected_product.capitalize())
+        if product_model is None or not issubclass(product_model, Producto):
+            return JsonResponse({'error': 'Invalid product selected.'}, status=400)
+
+        # Query the database to get the appropriate product options based on the selected_product
+        product_options = product_model.objects.all()
+        options = [{'id': option.idProducto, 'name': option.marca + " " + str(option.precioUnitario)} for option in
+                   product_options]
+        return JsonResponse({'options': options})
+
+
+class ClientOptionsView(View):
+    def get(self, request):
+        # Query the database to get the client options
+        client_options = Cliente.objects.all()
+        options = [{'rut': option.rut, 'name': option.nombre} for option in client_options]
+        return JsonResponse({'options': options})
+

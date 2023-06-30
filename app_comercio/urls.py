@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import AboutPageView, ClientePageView, HomePageView, AddClientePageView, MonitorPageView, \
-    AddComputadorPageView, MousePageView, ComputadorPageView, AddMonitorPageView, AddMousePageView, DeleteClientView
+    AddComputadorPageView, MousePageView, ComputadorPageView, AddMonitorPageView, AddMousePageView, DeleteClientView, \
+    ProductOptionsView, ClientOptionsView, CompraPageView
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
@@ -13,6 +14,8 @@ urlpatterns = [
     path("IngresarComputador", AddComputadorPageView.as_view(), name='ingresar-computador'),
     path("IngresarMonitor", AddMonitorPageView.as_view(), name='ingresar-monitor'),
     path("IngresarMouse", AddMousePageView.as_view(), name='ingresar-mouse'),
-    path('/cliente', DeleteClientView.as_view(), name='delete_data'),
-
+    path('get_product_options/', ProductOptionsView.as_view(), name='get_product_options'),
+    path('get_client_options/', ClientOptionsView.as_view(), name='get_client_options'),
+    path('Compra/', CompraPageView.as_view(), name='compra'),
+    path('cliente/', DeleteClientView.as_view(), name='delete_data'),
 ]
