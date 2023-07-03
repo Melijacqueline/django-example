@@ -16,6 +16,7 @@
       <th>Dirección</th>
       <th>Celular</th>
       <th>Email</th>
+      <th>Imagen</th>
       <th>Seleccionar</th>
     </tr>
     </thead>
@@ -27,6 +28,7 @@
       <td>{{ item.direccion }}</td>
       <td>{{ item.celular }}</td>
       <td>{{ item.email }}</td>
+      <td><img src="{{ item.image_url }}"   width="50" height="50" alt=""></td>
       <td><input type="checkbox" name="selected_items" value="{{ item.rut }}"></td>
     </tr>
     {% endfor %}

@@ -164,6 +164,72 @@ class DeleteClientView(View):
 
     def get(self, request):
         return render(request, self.template_name)
+class DeleteMonitView(View):
+
+    template_name = 'monitor.html'
+    success_url = 'monitor'
+
+    def post(self, request):
+        selected_items = request.POST.getlist('selected_items')
+
+        # Validate and sanitize the selected_items
+        try:
+            selected_items = list(map(int, selected_items))  # Convert to a list of integers
+        except ValueError:
+            raise Http404("Invalid input for selected_items")
+
+        # Perform the deletion
+        Monitor.objects.filter(id__in=selected_items).delete()
+
+        return redirect(self.success_url)  # Redirect to a success page or another view
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+class DeleteComputView(View):
+
+    template_name = 'computador.html'
+    success_url = 'computador'
+
+    def post(self, request):
+        selected_items = request.POST.getlist('selected_items')
+
+        # Validate and sanitize the selected_items
+        try:
+            selected_items = list(map(int, selected_items))  # Convert to a list of integers
+        except ValueError:
+            raise Http404("Invalid input for selected_items")
+
+        # Perform the deletion
+        Computador.objects.filter(id__in=selected_items).delete()
+
+        return redirect(self.success_url)  # Redirect to a success page or another view
+
+    def get(self, request):
+        return render(request, self.template_name)
+
+class DeleteMousView(View):
+
+    template_name = 'mouse.html'
+    success_url = 'mouse'
+
+    def post(self, request):
+        selected_items = request.POST.getlist('selected_items')
+
+        # Validate and sanitize the selected_items
+        try:
+            selected_items = list(map(int, selected_items))  # Convert to a list of integers
+        except ValueError:
+            raise Http404("Invalid input for selected_items")
+
+        # Perform the deletion
+        Mouse.objects.filter(id__in=selected_items).delete()
+
+        return redirect(self.success_url)  # Redirect to a success page or another view
+
+    def get(self, request):
+        return render(request, self.template_name)
+
 
 
 class ProductOptionsView(View):
@@ -187,4 +253,3 @@ class ClientOptionsView(View):
         client_options = Cliente.objects.all()
         options = [{'rut': option.rut, 'name': option.nombre} for option in client_options]
         return JsonResponse({'options': options})
-

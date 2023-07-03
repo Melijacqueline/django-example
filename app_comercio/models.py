@@ -20,6 +20,7 @@ class Producto(models.Model):
 
 class Mouse(Producto):
     wireless = models.BooleanField()
+    selected = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.idProducto) + " - Mouse"
@@ -27,6 +28,7 @@ class Mouse(Producto):
 
 class Monitor(Producto):
     resolucion = models.CharField(max_length=10)
+    selected = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.idProducto) + "  - Monitor"
@@ -36,6 +38,7 @@ class Computador(Producto):
     cpu = models.CharField(max_length=5)
     ram = models.IntegerField()
     hdd = models.IntegerField()
+    selected = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.idProducto) + "  - Computador"
@@ -50,9 +53,16 @@ class Cliente(models.Model):
     compraMouse = models.ManyToManyField(Mouse, blank=True)
     compraComputador = models.ManyToManyField(Computador, blank=True)
     compraMonitor = models.ManyToManyField(Monitor, blank=True)
+    imagen_cliente = models.ImageField(null=True, blank=True, upload_to="images/")
     selected = models.BooleanField(default=False)
 
     objects = models.Manager()
 
     def __str__(self):
         return str(self.rut) + " - " + self.nombre
+
+    def image_url(self):
+        if self.imagen_cliente and self.imagen_cliente.name:
+            return '/media/' + self.imagen_cliente.name
+        else:
+            return None
